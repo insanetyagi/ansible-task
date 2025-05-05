@@ -1,0 +1,8 @@
+---
+- name: Setup server with MySQL, PostgreSQL, and Nginx
+  hosts: web
+  become: yes
+  roles:
+    - mysql
+    - postgresql
+    - nginx

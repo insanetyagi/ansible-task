@@ -1,0 +1,14 @@
+---
+- name: Install PostgreSQL
+  apt:
+    name: postgresql
+    state: present
+    update_cache: yes
+
+- name: Set Postgres password
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  shell: psql -c "ALTER USER postgres WITH PASSWORD '{{ postgres_password }}';"
+  environment:
+    PGPASSWORD: ""
