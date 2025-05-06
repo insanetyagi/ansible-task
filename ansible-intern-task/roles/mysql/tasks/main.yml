@@ -1,31 +1,27 @@
-- name: Install MySQL server
+---
+- name: Install MySQL server and dependencies
   apt:
-    name: mysql-server
+    name:
+      - mysql-server
+      - python3-pymysql
     state: present
     update_cache: yes
-  become: true  # Required for apt operations
+  become: true
 
 - name: Ensure MySQL service is running
   service:
     name: mysql
     state: started
     enabled: yes
-  become: true  # Required for managing services
+  become: true
 
-# Workaround: Set MySQL root password using shell command (only works if no password is set yet)
-- name: Set MySQL root password using SQL (only if no password is set)
+- name: Set MySQL root password using shell (only if no password is set)
   shell: |
-    mysql -u root <<EOF
-    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}';
-    FLUSH PRIVILEGES;
-    EOF
-  args:
-    warn: false
-  ignore_errors: true
-  become: true  # Required for running mysql command as root
+    mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
+  ignore_errors: true  # in case password is already set
+  become: true
 
-# Now use mysql_user to make sure it's set properly across all hosts
-- name: Set MySQL root user with password via Ansible module
+- name: Ensure MySQL root user has password using Ansible module
   mysql_user:
     name: root
     password: "{{ mysql_root_password }}"
@@ -35,4 +31,4 @@
     check_implicit_admin: yes
     priv: "*.*:ALL,GRANT"
     state: present
-  become: true  # May not be needed depending on MySQL configuration, but safe to include
+  become: true
