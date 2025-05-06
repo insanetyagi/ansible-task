@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  web:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: 172.31.87.116  # Direct IP of MySQL
+      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+
+  hello-app:
+    image: php:8.2-apache
+    ports:
+      - "8081:80"
+    volumes:
+      - ./hello:/var/www/html
+    environment:
+      DB_HOST: 172.31.87.116  # Direct IP of MySQL
+      DB_USER: root
+      DB_PASSWORD: "{{ mysql_root_password }}"
+      DB_NAME: testdb
+    depends_on:
+      - wait-for-db
+
+  wait-for-db:
+    image: jwilder/dockerize
+    command: -wait tcp://172.31.87.116:3306 -timeout 20s

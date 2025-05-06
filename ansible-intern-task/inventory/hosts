@@ -1,2 +1,2 @@
 [web]
-54.152.198.179 ansible_user=ubuntu ansible_ssh_private_key_file=./ec2_key.pem ansible_become=true ansible_become_method=sudo
+52.71.15.201 ansible_user=ubuntu ansible_ssh_private_key_file=./ec2_key.pem ansible_become=true ansible_become_method=sudo
